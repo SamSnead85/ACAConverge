@@ -262,10 +262,17 @@ class ReportGenerator:
                 <h2>Population: {pop.get('name', 'Unknown')}</h2>
                 <p>Showing {len(records)} of {report.data.get('total', 0):,} records</p>
                 <table>
-                    <tr>{''.join(f'<th>{col}</th>' for col in columns)}</tr>
+                    <tr>
             """
+            for col in columns:
+                html += f"<th>{col}</th>"
+            html += "</tr>"
             for record in records:
-                html += f"<tr>{''.join(f'<td>{record.get(col, '')}</td>' for col in columns)}</tr>"
+                html += "<tr>"
+                for col in columns:
+                    val = record.get(col, '')
+                    html += f"<td>{val}</td>"
+                html += "</tr>"
             html += "</table>"
         
         elif report.type == "comparison":
