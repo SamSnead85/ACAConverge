@@ -179,8 +179,14 @@ class SqlConverter:
             progress_callback(self.progress)
         
         try:
-            # Create table from schema
-            schema = parser.get_schema()
+            # Create table from schema - handle both ColumnInfo and dict formats
+            if hasattr(parser, 'get_schema_as_dicts'):
+                schema = parser.get_schema_as_dicts()
+            else:
+                schema = parser.get_schema()
+                # Convert ColumnInfo to dict if needed
+                if schema and hasattr(schema[0], 'to_dict'):
+                    schema = [col.to_dict() for col in schema]
             self.create_table(schema)
             
             self.progress.message = 'Inserting records...'

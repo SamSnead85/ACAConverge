@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
 
+
 @dataclass
 class ColumnInfo:
     """Column metadata"""
@@ -19,6 +20,13 @@ class ColumnInfo:
     data_type: str
     sql_type: str
     sample_values: List[Any] = None
+    
+    def to_dict(self) -> Dict:
+        return {
+            'name': self.name,
+            'type': self.data_type,
+            'sql_type': self.sql_type
+        }
 
 
 class BaseParser(ABC):
@@ -26,8 +34,12 @@ class BaseParser(ABC):
     
     @abstractmethod
     def get_schema(self) -> List[ColumnInfo]:
-        """Get column schema"""
+        """Get column schema as ColumnInfo objects"""
         pass
+    
+    def get_schema_as_dicts(self) -> List[Dict]:
+        """Get schema as list of dicts for SqlConverter compatibility"""
+        return [col.to_dict() for col in self.get_schema()]
     
     @abstractmethod
     def read_records(self, chunk_size: int = 10000) -> Generator[List[Dict], None, None]:
@@ -37,6 +49,14 @@ class BaseParser(ABC):
     @abstractmethod
     def get_row_count(self) -> int:
         """Get total row count (estimate for large files)"""
+        pass
+    
+    def stream_records(self, chunk_size: int = 10000) -> Generator[List[Dict], None, None]:
+        """Alias for read_records for compatibility"""
+        return self.read_records(chunk_size)
+    
+    def close(self):
+        """Close any open resources"""
         pass
 
 
