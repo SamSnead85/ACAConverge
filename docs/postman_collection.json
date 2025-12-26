@@ -1,0 +1,221 @@
+{
+    "info": {
+        "name": "YXDB Converter API",
+        "description": "API for converting Alteryx YXDB files to SQL databases with NLP querying",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "default"
+        },
+        {
+            "key": "job_id",
+            "value": "",
+            "type": "default"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/health"
+                    }
+                },
+                {
+                    "name": "Root",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Conversion",
+            "item": [
+                {
+                    "name": "Upload File",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/upload",
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "file",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Start Demo",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/upload/demo"
+                    }
+                },
+                {
+                    "name": "Get Status",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/conversion/status/{{job_id}}"
+                    }
+                },
+                {
+                    "name": "Get Schema",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/schema/{{job_id}}"
+                    }
+                },
+                {
+                    "name": "Download Database",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/download/{{job_id}}"
+                    }
+                },
+                {
+                    "name": "List Jobs",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/jobs"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Query",
+            "item": [
+                {
+                    "name": "Natural Language Query",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/query",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"question\": \"Show all records\",\n  \"max_rows\": 100\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Direct SQL Query",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/query/sql",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"sql\": \"SELECT * FROM data LIMIT 10\",\n  \"max_rows\": 100\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Query History",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/query/history/{{job_id}}"
+                    }
+                },
+                {
+                    "name": "Preview SQL",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/query/preview",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"question\": \"Count all records\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Admin",
+            "item": [
+                {
+                    "name": "Health Check (Detailed)",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/health"
+                    }
+                },
+                {
+                    "name": "Metrics",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/metrics"
+                    }
+                },
+                {
+                    "name": "Cache Stats",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/cache/stats"
+                    }
+                },
+                {
+                    "name": "Clear Cache",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/admin/cache/clear"
+                    }
+                },
+                {
+                    "name": "Queue Status",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/queue/status"
+                    }
+                },
+                {
+                    "name": "Storage Stats",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/storage"
+                    }
+                },
+                {
+                    "name": "System Info",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/system"
+                    }
+                },
+                {
+                    "name": "Trigger Cleanup",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/admin/cleanup"
+                    }
+                }
+            ]
+        }
+    ]
+}
