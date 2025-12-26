@@ -76,11 +76,12 @@ function AppContent() {
   const tabs = [
     { id: 'upload', label: '📤 Upload', shortcut: '⌘1' },
     { id: 'schema', label: '📋 Schema', shortcut: '⌘2', disabled: !jobId },
-    { id: 'query', label: '💬 Query', shortcut: '⌘3', disabled: !jobId },
-    { id: 'populations', label: '👥 Populations', shortcut: '⌘4', disabled: !jobId },
-    { id: 'reports', label: '📊 Reports', shortcut: '⌘5', disabled: !jobId },
-    { id: 'messages', label: '📨 Messages', shortcut: '⌘6', disabled: !jobId },
-    { id: 'settings', label: '⚙️ Settings', shortcut: '⌘7' },
+    { id: 'dashboard', label: '📊 Dashboard', shortcut: '⌘3', disabled: !jobId },
+    { id: 'query', label: '💬 Query', shortcut: '⌘4', disabled: !jobId },
+    { id: 'populations', label: '👥 Populations', shortcut: '⌘5', disabled: !jobId },
+    { id: 'reports', label: '📈 Reports', shortcut: '⌘6', disabled: !jobId },
+    { id: 'messages', label: '📨 Messages', shortcut: '⌘7', disabled: !jobId },
+    { id: 'settings', label: '⚙️ Settings', shortcut: '⌘8' },
   ];
 
   return (
@@ -142,6 +143,9 @@ function AppContent() {
         )}
         {activeTab === 'schema' && (
           <SchemaViewer schema={schema} jobId={jobId} />
+        )}
+        {activeTab === 'dashboard' && (
+          <Dashboard jobId={jobId} schema={schema} />
         )}
         {activeTab === 'query' && (
           <QueryInterface
