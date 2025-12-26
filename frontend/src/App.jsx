@@ -7,6 +7,9 @@ import Dashboard from './components/Dashboard';
 import PopulationManager from './components/PopulationManager';
 import MessageCenter from './components/MessageCenter';
 import ReportBuilder from './components/ReportBuilder';
+import DatabaseConfig from './components/DatabaseConfig';
+import QueryBuilder from './components/QueryBuilder';
+import AudienceInsights from './components/AudienceInsights';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider, ThemeToggle } from './components/Theme';
 import { KeyboardProvider, useShortcut } from './components/Keyboard';
@@ -18,6 +21,7 @@ import './styles/charts.css';
 import './styles/final.css';
 import './styles/population.css';
 import './styles/advanced.css';
+import './styles/database.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -75,6 +79,7 @@ function AppContent() {
     { id: 'populations', label: '👥 Populations', shortcut: '⌘4', disabled: !jobId },
     { id: 'reports', label: '📊 Reports', shortcut: '⌘5', disabled: !jobId },
     { id: 'messages', label: '📨 Messages', shortcut: '⌘6', disabled: !jobId },
+    { id: 'settings', label: '⚙️ Settings', shortcut: '⌘7' },
   ];
 
   return (
@@ -164,6 +169,12 @@ function AppContent() {
             schema={schema}
             selectedPopulation={selectedPopulation}
           />
+        )}
+        {activeTab === 'settings' && (
+          <div className="settings-page">
+            <h2>⚙️ Settings</h2>
+            <DatabaseConfig jobId={jobId} />
+          </div>
         )}
       </main>
 

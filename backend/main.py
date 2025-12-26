@@ -16,6 +16,7 @@ from routes.population import router as population_router
 from routes.reporting import router as reporting_router
 from routes.messaging import router as messaging_router
 from routes.scheduler import router as scheduler_router
+from routes.database import router as database_router
 from services.middleware import RequestLoggingMiddleware
 
 # Load environment variables
@@ -44,6 +45,8 @@ app.include_router(population_router, prefix="/api", tags=["Populations"])
 app.include_router(reporting_router, prefix="/api", tags=["Reporting"])
 app.include_router(messaging_router, prefix="/api", tags=["Messaging"])
 app.include_router(scheduler_router, prefix="/api", tags=["Scheduler"])
+app.include_router(database_router, prefix="/api", tags=["Database"])
+
 
 
 # Create uploads and databases directories

@@ -1,0 +1,247 @@
+/* ================================================
+   DATABASE CONFIG CSS
+   ================================================ */
+
+.database-config {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.database-config h3 {
+    margin: 0;
+}
+
+.database-config h4 {
+    margin: 0 0 var(--space-4);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.db-type-selector {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.db-type-option {
+    flex: 1;
+    cursor: pointer;
+}
+
+.db-type-option input {
+    display: none;
+}
+
+.db-type-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-6);
+    background: var(--color-bg-tertiary);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.db-type-option.active .db-type-content,
+.db-type-option:hover .db-type-content {
+    border-color: var(--color-accent-primary);
+}
+
+.db-type-option.active .db-type-content {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.db-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.db-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.db-desc {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.pg-config {
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+}
+
+.pg-actions {
+    margin-top: var(--space-4);
+}
+
+.test-result {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+}
+
+.test-result.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid #22c55e;
+}
+
+.test-result.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+}
+
+.test-result p {
+    margin: 0 0 var(--space-2);
+}
+
+.test-result .test-detail {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.config-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+}
+
+/* Scheduler Component */
+.scheduler-section {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+}
+
+.scheduler-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.scheduled-jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.scheduled-job-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.job-icon {
+    font-size: 1.5rem;
+}
+
+.job-details {
+    flex: 1;
+}
+
+.job-name {
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.job-meta {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    display: flex;
+    gap: var(--space-4);
+}
+
+.job-status {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+}
+
+.job-status.active {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+.job-status.paused {
+    background: rgba(234, 179, 8, 0.1);
+    color: #eab308;
+}
+
+.job-status.completed {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--color-accent-primary);
+}
+
+/* Settings Panel */
+.settings-panel {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-6);
+    min-height: 400px;
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.settings-nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.settings-nav-item:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.settings-nav-item.active {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--color-accent-primary);
+}
+
+.settings-content {
+    padding: var(--space-4);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+@media (max-width: 768px) {
+    .settings-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .db-type-selector {
+        flex-direction: column;
+    }
+}
