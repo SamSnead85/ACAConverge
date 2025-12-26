@@ -17,6 +17,7 @@ import './styles/enhanced.css';
 import './styles/charts.css';
 import './styles/final.css';
 import './styles/population.css';
+import './styles/advanced.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 

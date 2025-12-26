@@ -15,15 +15,16 @@ from routes.admin import router as admin_router
 from routes.population import router as population_router
 from routes.reporting import router as reporting_router
 from routes.messaging import router as messaging_router
+from routes.scheduler import router as scheduler_router
 from services.middleware import RequestLoggingMiddleware
 
 # Load environment variables
 load_dotenv()
 
 app = FastAPI(
-    title="YXDB to SQL Converter",
-    description="Convert Alteryx .yxdb files to SQL databases with NLP query capabilities",
-    version="1.1.0"
+    title="Data Converter & Analytics Platform",
+    description="Convert data files (YXDB, CSV, Excel, JSON) to SQL with NLP queries, population management, and messaging",
+    version="2.0.0"
 )
 
 # CORS configuration - allow all origins in development
@@ -42,6 +43,8 @@ app.include_router(admin_router, prefix="/api", tags=["Admin"])
 app.include_router(population_router, prefix="/api", tags=["Populations"])
 app.include_router(reporting_router, prefix="/api", tags=["Reporting"])
 app.include_router(messaging_router, prefix="/api", tags=["Messaging"])
+app.include_router(scheduler_router, prefix="/api", tags=["Scheduler"])
+
 
 # Create uploads and databases directories
 os.makedirs("uploads", exist_ok=True)
