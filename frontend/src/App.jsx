@@ -22,6 +22,7 @@ import './styles/final.css';
 import './styles/population.css';
 import './styles/advanced.css';
 import './styles/database.css';
+import './styles/query.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 

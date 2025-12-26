@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { exportToCSV, exportToJSON } from '../utils/api';
+import { useToast } from './Toast';
+import { Modal } from './Modal';
+import QueryBuilder from './QueryBuilder';
 
-export default function QueryInterface({ jobId, onQueryResult }) {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+export default function QueryInterface({ jobId, schema, onSavePopulation }) {
     const [question, setQuestion] = useState('');
     const [sqlPreview, setSqlPreview] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [result, setResult] = useState(null);
     const [showSql, setShowSql] = useState(false);
+    const [showBuilder, setShowBuilder] = useState(false);
+    const [showSavePopulation, setShowSavePopulation] = useState(false);
+    const [populationName, setPopulationName] = useState('');
+    const [saving, setSaving] = useState(false);
+    const { addToast } = useToast();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,18 +28,15 @@ export default function QueryInterface({ jobId, onQueryResult }) {
         setSqlPreview('');
 
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/query`,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        job_id: jobId,
-                        question: question.trim(),
-                        max_rows: 1000,
-                    }),
-                }
-            );
+            const response = await fetch(`${API_URL}/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    job_id: jobId,
+                    question: question.trim(),
+                    max_rows: 1000,
+                }),
+            });
 
             const data = await response.json();
 
@@ -38,14 +45,79 @@ export default function QueryInterface({ jobId, onQueryResult }) {
             } else {
                 setResult(data);
                 setSqlPreview(data.sql_query);
-                if (onQueryResult) {
-                    onQueryResult(data);
-                }
             }
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSqlQuery = async (sql) => {
+        setLoading(true);
+        setError(null);
+        setSqlPreview(sql);
+        setShowBuilder(false);
+
+        try {
+            const response = await fetch(`${API_URL}/query/sql`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    job_id: jobId,
+                    sql: sql,
+                    max_rows: 1000,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                setError(data.error);
+            } else {
+                setResult(data);
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleQueryBuilderResult = (sql) => {
+        setQuestion('');
+        handleSqlQuery(sql);
+    };
+
+    const handleSaveAsPopulation = async () => {
+        if (!populationName.trim() || !result) return;
+
+        setSaving(true);
+        try {
+            const response = await fetch(`${API_URL}/populations/${jobId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: populationName.trim(),
+                    query: sqlPreview,
+                    description: question || `Created from query: ${sqlPreview.substring(0, 50)}...`
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.population) {
+                addToast(`Population "${populationName}" saved with ${data.population.count} records`, 'success');
+                setShowSavePopulation(false);
+                setPopulationName('');
+                onSavePopulation?.();
+            } else if (data.detail) {
+                addToast(data.detail, 'error');
+            }
+        } catch (err) {
+            addToast('Failed to save population', 'error');
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -83,72 +155,96 @@ export default function QueryInterface({ jobId, onQueryResult }) {
     }
 
     return (
-        <div className="card">
-            <div className="card-header">
-                <h2 className="card-title">Natural Language Query</h2>
-                <p className="card-description">
-                    Ask questions about your data in plain English - AI will convert to SQL
-                </p>
+        <div className="query-page">
+            {/* Query Builder Toggle */}
+            <div className="query-mode-toggle">
+                <button
+                    className={`mode-btn ${!showBuilder ? 'active' : ''}`}
+                    onClick={() => setShowBuilder(false)}
+                >
+                    💬 Natural Language
+                </button>
+                <button
+                    className={`mode-btn ${showBuilder ? 'active' : ''}`}
+                    onClick={() => setShowBuilder(true)}
+                >
+                    🔧 Query Builder
+                </button>
             </div>
 
-            {error && (
-                <div className="alert alert-error">
-                    {error}
+            {showBuilder ? (
+                <QueryBuilder
+                    schema={schema}
+                    onQueryBuilt={handleQueryBuilderResult}
+                />
+            ) : (
+                <div className="card">
+                    <div className="card-header">
+                        <h2 className="card-title">Natural Language Query</h2>
+                        <p className="card-description">
+                            Ask questions about your data in plain English - AI will convert to SQL
+                        </p>
+                    </div>
+
+                    {error && (
+                        <div className="alert alert-error">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="query-input-group">
+                            <textarea
+                                className="query-input"
+                                value={question}
+                                onChange={(e) => setQuestion(e.target.value)}
+                                placeholder="Ask a question about your data... e.g., 'Show me all records where sales > 1000'"
+                                rows={3}
+                            />
+                        </div>
+
+                        <div className="sample-queries">
+                            {sampleQueries.map((q) => (
+                                <button
+                                    key={q}
+                                    type="button"
+                                    className="sample-query-btn"
+                                    onClick={() => setQuestion(q)}
+                                >
+                                    {q}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="query-actions">
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={loading || !question.trim()}
+                            >
+                                {loading ? (
+                                    <>
+                                        <span className="spinner"></span>
+                                        Processing...
+                                    </>
+                                ) : (
+                                    '🔍 Run Query'
+                                )}
+                            </button>
+
+                            {result && (
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowSql(!showSql)}
+                                >
+                                    {showSql ? 'Hide SQL' : 'Show SQL'}
+                                </button>
+                            )}
+                        </div>
+                    </form>
                 </div>
             )}
-
-            <form onSubmit={handleSubmit}>
-                <div className="query-input-group">
-                    <textarea
-                        className="query-input"
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        placeholder="Ask a question about your data... e.g., 'Show me all records where sales > 1000'"
-                        rows={3}
-                    />
-                </div>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
-                    {sampleQueries.map((q) => (
-                        <button
-                            key={q}
-                            type="button"
-                            className="btn btn-secondary"
-                            style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
-                            onClick={() => setQuestion(q)}
-                        >
-                            {q}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="query-actions">
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={loading || !question.trim()}
-                    >
-                        {loading ? (
-                            <>
-                                <span className="spinner"></span>
-                                Processing...
-                            </>
-                        ) : (
-                            '🔍 Run Query'
-                        )}
-                    </button>
-
-                    {result && (
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => setShowSql(!showSql)}
-                        >
-                            {showSql ? 'Hide SQL' : 'Show SQL'}
-                        </button>
-                    )}
-                </div>
-            </form>
 
             {showSql && sqlPreview && (
                 <div className="sql-preview">
@@ -168,6 +264,12 @@ export default function QueryInterface({ jobId, onQueryResult }) {
                             {result.execution_time_ms}ms
                         </span>
                         <div className="results-actions">
+                            <button
+                                className="btn btn-accent"
+                                onClick={() => setShowSavePopulation(true)}
+                            >
+                                💾 Save as Population
+                            </button>
                             <button className="btn btn-secondary" onClick={handleExportCSV}>
                                 📥 CSV
                             </button>
@@ -205,8 +307,8 @@ export default function QueryInterface({ jobId, onQueryResult }) {
                     </div>
 
                     {result.results.length > 100 && (
-                        <p style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                            Showing first 100 of {result.row_count} results. Export for complete data.
+                        <p className="results-more">
+                            Showing first 100 of {result.row_count} results. Export or save as population for complete data.
                         </p>
                     )}
                 </div>
@@ -217,6 +319,50 @@ export default function QueryInterface({ jobId, onQueryResult }) {
                     Query executed successfully but returned no results.
                 </div>
             )}
+
+            {/* Save as Population Modal */}
+            <Modal
+                isOpen={showSavePopulation}
+                onClose={() => setShowSavePopulation(false)}
+                title="Save as Population"
+                size="small"
+            >
+                <div className="save-population-form">
+                    <p>Save these {result?.row_count.toLocaleString()} records as a reusable population for reports and messaging.</p>
+
+                    <div className="form-group">
+                        <label>Population Name</label>
+                        <input
+                            type="text"
+                            className="prompt-input"
+                            value={populationName}
+                            onChange={(e) => setPopulationName(e.target.value)}
+                            placeholder="e.g., High Value Customers"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Source Query</label>
+                        <pre className="sql-preview-small">{sqlPreview}</pre>
+                    </div>
+
+                    <div className="modal-actions">
+                        <button
+                            className="btn btn-secondary"
+                            onClick={() => setShowSavePopulation(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleSaveAsPopulation}
+                            disabled={saving || !populationName.trim()}
+                        >
+                            {saving ? 'Saving...' : '💾 Save Population'}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }
