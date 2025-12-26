@@ -182,3 +182,66 @@ async def preview_sql(request: QueryRequest):
         "natural_language": request.question,
         "sql_query": sql
     }
+
+
+@router.get("/query/suggestions/{job_id}")
+async def get_query_suggestions(job_id: str):
+    """
+    Get AI-powered query suggestions based on the data schema
+    """
+    from routes.conversion import conversion_jobs
+    from services.smart_suggestions import SmartQuerySuggestions
+    
+    if job_id not in conversion_jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = conversion_jobs[job_id]
+    schema = job.get("schema", [])
+    
+    if not schema:
+        return {"suggestions": []}
+    
+    suggestions_service = SmartQuerySuggestions(schema)
+    suggestions = suggestions_service.generate_suggestions()
+    
+    return {"suggestions": suggestions}
+
+
+@router.post("/query/alternatives")
+async def get_alternative_queries(request: QueryRequest):
+    """
+    Get alternative query suggestions when a query fails or returns no results
+    """
+    from routes.conversion import conversion_jobs
+    from services.smart_suggestions import SmartQuerySuggestions
+    
+    if request.job_id not in conversion_jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = conversion_jobs[request.job_id]
+    schema = job.get("schema", [])
+    
+    suggestions_service = SmartQuerySuggestions(schema)
+    alternatives = suggestions_service.get_alternative_queries(request.question)
+    
+    return {"alternatives": alternatives}
+
+
+@router.post("/query/refine")
+async def refine_query(request: QueryRequest):
+    """
+    Use AI to refine and improve a query before execution
+    """
+    from routes.conversion import conversion_jobs
+    from services.smart_suggestions import SmartQuerySuggestions
+    
+    if request.job_id not in conversion_jobs:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = conversion_jobs[request.job_id]
+    schema = job.get("schema", [])
+    
+    suggestions_service = SmartQuerySuggestions(schema)
+    refined = suggestions_service.refine_query(request.question)
+    
+    return refined

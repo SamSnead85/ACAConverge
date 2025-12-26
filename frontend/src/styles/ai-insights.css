@@ -1,0 +1,180 @@
+/* ================================================
+   AI INSIGHTS STYLES
+   ================================================ */
+
+.ai-insights {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.03));
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+}
+
+.ai-insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+}
+
+.ai-insights-header h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1rem;
+}
+
+.gemini-icon {
+    font-size: 1.25rem;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+}
+
+.insight-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: var(--space-3);
+}
+
+.insight-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--accent-color, var(--color-accent-primary));
+    transform: translateY(-2px);
+}
+
+.insight-card.insight-stat {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), transparent);
+}
+
+.insight-card.insight-opportunity {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), transparent);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.insight-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.insight-content {
+    flex: 1;
+}
+
+.insight-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-1);
+}
+
+.insight-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+    margin-bottom: var(--space-1);
+}
+
+.insight-description {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+}
+
+.insight-action {
+    font-size: 0.625rem;
+    color: var(--color-accent-secondary);
+    margin-top: var(--space-2);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.insight-card:hover .insight-action {
+    opacity: 1;
+}
+
+/* AI Loading Animation */
+.ai-insights-loading {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--color-text-muted);
+}
+
+.ai-loading-animation {
+    margin-bottom: var(--space-4);
+}
+
+.gemini-dots {
+    display: inline-flex;
+    gap: var(--space-1);
+}
+
+.gemini-dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: geminiPulse 1.4s infinite ease-in-out;
+}
+
+.gemini-dots span:nth-child(1) {
+    background: #4285f4;
+    animation-delay: 0s;
+}
+
+.gemini-dots span:nth-child(2) {
+    background: #ea4335;
+    animation-delay: 0.2s;
+}
+
+.gemini-dots span:nth-child(3) {
+    background: #fbbc04;
+    animation-delay: 0.4s;
+}
+
+.gemini-dots span:nth-child(4) {
+    background: #34a853;
+    animation-delay: 0.6s;
+}
+
+@keyframes geminiPulse {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Dashboard Integration */
+.dashboard-ai-section {
+    margin-bottom: var(--space-6);
+}
+
+/* Suggestions Subtitle */
+.suggestions-subtitle {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    margin: 0 0 var(--space-4);
+}
+
+.suggestions-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    color: var(--color-text-muted);
+}

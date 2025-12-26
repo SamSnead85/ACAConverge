@@ -23,6 +23,7 @@ import './styles/database.css';
 import './styles/query.css';
 import './styles/history.css';
 import './styles/modern.css';
+import './styles/ai-insights.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
