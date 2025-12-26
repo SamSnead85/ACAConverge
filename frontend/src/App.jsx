@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react';
 import FileUpload from './components/FileUpload';
 import SchemaViewer from './components/SchemaViewer';
 import QueryInterface from './components/QueryInterface';
-import QueryHistory from './components/QueryHistory';
 import Dashboard from './components/Dashboard';
 import PopulationManager from './components/PopulationManager';
 import MessageCenter from './components/MessageCenter';
 import ReportBuilder from './components/ReportBuilder';
 import DatabaseConfig from './components/DatabaseConfig';
-import QueryBuilder from './components/QueryBuilder';
-import AudienceInsights from './components/AudienceInsights';
+import SmartSuggestions from './components/SmartSuggestions';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider, ThemeToggle } from './components/Theme';
 import { KeyboardProvider, useShortcut } from './components/Keyboard';
@@ -24,6 +22,7 @@ import './styles/advanced.css';
 import './styles/database.css';
 import './styles/query.css';
 import './styles/history.css';
+import './styles/modern.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -41,10 +40,12 @@ function AppContent() {
   // Register keyboard shortcuts
   useShortcut('mod+1', () => setActiveTab('upload'), 'Go to Upload');
   useShortcut('mod+2', () => setActiveTab('schema'), 'Go to Schema');
-  useShortcut('mod+3', () => setActiveTab('query'), 'Go to Query');
-  useShortcut('mod+4', () => setActiveTab('populations'), 'Go to Populations');
-  useShortcut('mod+5', () => setActiveTab('reports'), 'Go to Reports');
-  useShortcut('mod+6', () => setActiveTab('messages'), 'Go to Messages');
+  useShortcut('mod+3', () => setActiveTab('dashboard'), 'Go to Dashboard');
+  useShortcut('mod+4', () => setActiveTab('query'), 'Go to Query');
+  useShortcut('mod+5', () => setActiveTab('populations'), 'Go to Populations');
+  useShortcut('mod+6', () => setActiveTab('reports'), 'Go to Reports');
+  useShortcut('mod+7', () => setActiveTab('messages'), 'Go to Messages');
+  useShortcut('mod+8', () => setActiveTab('settings'), 'Go to Settings');
 
   // Load populations when job changes
   useEffect(() => {
@@ -66,7 +67,7 @@ function AppContent() {
   const handleUploadComplete = (newJobId, newSchema) => {
     setJobId(newJobId);
     setSchema(newSchema);
-    setActiveTab('schema');
+    setActiveTab('dashboard');
   };
 
   const handleSelectPopulation = (pop) => {
@@ -74,80 +75,131 @@ function AppContent() {
     setActiveTab('messages');
   };
 
-  const tabs = [
-    { id: 'upload', label: '📤 Upload', shortcut: '⌘1' },
-    { id: 'schema', label: '📋 Schema', shortcut: '⌘2', disabled: !jobId },
-    { id: 'dashboard', label: '📊 Dashboard', shortcut: '⌘3', disabled: !jobId },
-    { id: 'query', label: '💬 Query', shortcut: '⌘4', disabled: !jobId },
-    { id: 'populations', label: '👥 Populations', shortcut: '⌘5', disabled: !jobId },
-    { id: 'reports', label: '📈 Reports', shortcut: '⌘6', disabled: !jobId },
-    { id: 'messages', label: '📨 Messages', shortcut: '⌘7', disabled: !jobId },
-    { id: 'settings', label: '⚙️ Settings', shortcut: '⌘8' },
-  ];
-
   return (
-    <div className="app">
-      <header className="header">
-        <div className="header-content">
-          <div className="logo">
-            <div className="logo-icon">⚡</div>
-            <div className="logo-text">
-              <h1>YXDB Converter</h1>
-              <span>Powered by AI</span>
+    <div className="app modern-app">
+      {/* Modern Header */}
+      <header className="modern-header">
+        <div className="header-left">
+          <div className="brand">
+            <div className="brand-icon">
+              <svg viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="10" fill="url(#gradient)" />
+                <path d="M12 20L18 14L24 20L30 14" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 26L18 20L24 26L30 20" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+                <defs>
+                  <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+                    <stop stopColor="#6366f1" />
+                    <stop offset="1" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div className="brand-text">
+              <h1>ACA DataHub</h1>
+              <span className="brand-badge">
+                <span className="gemini-dot"></span>
+                Gemini AI
+              </span>
             </div>
           </div>
+        </div>
 
-          <nav className="nav-tabs">
-            {tabs.map(tab => (
+        <nav className="modern-nav">
+          <button
+            className={`nav-item ${activeTab === 'upload' ? 'active' : ''}`}
+            onClick={() => setActiveTab('upload')}
+          >
+            <span className="nav-icon">📤</span>
+            <span className="nav-label">Import</span>
+          </button>
+
+          {jobId && (
+            <>
               <button
-                key={tab.id}
-                className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-                disabled={tab.disabled}
-                title={tab.shortcut}
+                className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+                onClick={() => setActiveTab('dashboard')}
               >
-                {tab.label}
+                <span className="nav-icon">📊</span>
+                <span className="nav-label">Insights</span>
               </button>
-            ))}
-          </nav>
 
-          <div className="header-actions">
-            <button
-              className="help-btn"
-              onClick={startTour}
-              title="Start Tour"
-            >
-              🎯
-            </button>
-            <button
-              className="help-btn"
-              onClick={() => setShowHelp(true)}
-              title="Help"
-            >
-              ❓
-            </button>
-            <button
-              className="help-btn"
-              onClick={() => setShowFeedback(true)}
-              title="Feedback"
-            >
-              💬
-            </button>
-            <ThemeToggle />
-          </div>
+              <button
+                className={`nav-item ${activeTab === 'query' ? 'active' : ''}`}
+                onClick={() => setActiveTab('query')}
+              >
+                <span className="nav-icon">✨</span>
+                <span className="nav-label">AI Query</span>
+              </button>
+
+              <button
+                className={`nav-item ${activeTab === 'populations' ? 'active' : ''}`}
+                onClick={() => setActiveTab('populations')}
+              >
+                <span className="nav-icon">👥</span>
+                <span className="nav-label">Segments</span>
+              </button>
+
+              <button
+                className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
+                onClick={() => setActiveTab('reports')}
+              >
+                <span className="nav-icon">📈</span>
+                <span className="nav-label">Reports</span>
+              </button>
+
+              <button
+                className={`nav-item ${activeTab === 'messages' ? 'active' : ''}`}
+                onClick={() => setActiveTab('messages')}
+              >
+                <span className="nav-icon">📨</span>
+                <span className="nav-label">Outreach</span>
+              </button>
+            </>
+          )}
+        </nav>
+
+        <div className="header-right">
+          {jobId && (
+            <div className="job-indicator">
+              <span className="job-dot"></span>
+              Connected
+            </div>
+          )}
+          <button
+            className="icon-btn"
+            onClick={() => setActiveTab('settings')}
+            title="Settings"
+          >
+            ⚙️
+          </button>
+          <button
+            className="icon-btn"
+            onClick={() => setShowHelp(true)}
+            title="Help"
+          >
+            ❓
+          </button>
+          <ThemeToggle />
         </div>
       </header>
 
-      <main className="main-content">
+      {/* Main Content */}
+      <main className="modern-main">
         {activeTab === 'upload' && (
-          <FileUpload onUploadComplete={handleUploadComplete} />
+          <div className="upload-container">
+            <FileUpload onUploadComplete={handleUploadComplete} />
+            {!jobId && <SmartSuggestions />}
+          </div>
         )}
+
         {activeTab === 'schema' && (
           <SchemaViewer schema={schema} jobId={jobId} />
         )}
+
         {activeTab === 'dashboard' && (
           <Dashboard jobId={jobId} schema={schema} />
         )}
+
         {activeTab === 'query' && (
           <QueryInterface
             jobId={jobId}
@@ -155,6 +207,7 @@ function AppContent() {
             onSavePopulation={loadPopulations}
           />
         )}
+
         {activeTab === 'populations' && (
           <PopulationManager
             jobId={jobId}
@@ -162,6 +215,7 @@ function AppContent() {
             onSelectPopulation={handleSelectPopulation}
           />
         )}
+
         {activeTab === 'reports' && (
           <ReportBuilder
             jobId={jobId}
@@ -169,6 +223,7 @@ function AppContent() {
             schema={schema}
           />
         )}
+
         {activeTab === 'messages' && (
           <MessageCenter
             jobId={jobId}
@@ -176,6 +231,7 @@ function AppContent() {
             selectedPopulation={selectedPopulation}
           />
         )}
+
         {activeTab === 'settings' && (
           <div className="settings-page">
             <h2>⚙️ Settings</h2>
@@ -184,10 +240,20 @@ function AppContent() {
         )}
       </main>
 
-      <footer className="footer">
-        <div className="footer-content">
+      {/* Footer */}
+      <footer className="modern-footer">
+        <div className="footer-left">
           <VersionInfo />
-          <span>Made with ⚡ YXDB Converter</span>
+        </div>
+        <div className="footer-center">
+          <span className="footer-brand">ACA DataHub</span>
+          <span className="footer-divider">•</span>
+          <span>Powered by Google Gemini</span>
+        </div>
+        <div className="footer-right">
+          <button className="footer-link" onClick={() => setShowFeedback(true)}>
+            Feedback
+          </button>
         </div>
       </footer>
 
