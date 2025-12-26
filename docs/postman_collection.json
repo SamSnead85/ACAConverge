@@ -1,106 +1,209 @@
 {
     "info": {
-        "name": "YXDB Converter API",
-        "description": "API for converting Alteryx YXDB files to SQL databases with NLP querying",
-        "version": "1.0.0"
+        "name": "ACA Data Converter API",
+        "description": "Complete API documentation for the ACA Data Converter platform - supports multi-format file conversion, NLP queries, population management, reporting, and messaging.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "2.0.0"
     },
-    "variable": [
-        {
-            "key": "base_url",
-            "value": "http://localhost:8000",
-            "type": "default"
-        },
-        {
-            "key": "job_id",
-            "value": "",
-            "type": "default"
-        }
-    ],
     "item": [
         {
-            "name": "Health",
-            "item": [
-                {
-                    "name": "Health Check",
-                    "request": {
-                        "method": "GET",
-                        "url": "{{base_url}}/api/health"
-                    }
-                },
-                {
-                    "name": "Root",
-                    "request": {
-                        "method": "GET",
-                        "url": "{{base_url}}/"
-                    }
-                }
-            ]
-        },
-        {
             "name": "Conversion",
+            "description": "File upload and conversion endpoints",
             "item": [
                 {
                     "name": "Upload File",
                     "request": {
                         "method": "POST",
-                        "url": "{{base_url}}/api/upload",
+                        "header": [],
                         "body": {
                             "mode": "formdata",
                             "formdata": [
                                 {
                                     "key": "file",
                                     "type": "file",
-                                    "src": ""
+                                    "description": "File to upload (.yxdb, .csv, .xlsx, .xls, .json)"
                                 }
                             ]
-                        }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/upload",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload"
+                            ]
+                        },
+                        "description": "Upload a data file for conversion to SQL database. Supports YXDB, CSV, Excel, and JSON formats up to 50GB."
                     }
                 },
                 {
-                    "name": "Start Demo",
-                    "request": {
-                        "method": "POST",
-                        "url": "{{base_url}}/api/upload/demo"
-                    }
-                },
-                {
-                    "name": "Get Status",
+                    "name": "Get Supported Formats",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/conversion/status/{{job_id}}"
+                        "url": {
+                            "raw": "{{base_url}}/api/supported-formats",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "supported-formats"
+                            ]
+                        },
+                        "description": "Get list of supported file formats and maximum file size"
+                    }
+                },
+                {
+                    "name": "Upload Demo Data",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/upload/demo?record_count=50000",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "upload",
+                                "demo"
+                            ],
+                            "query": [
+                                {
+                                    "key": "record_count",
+                                    "value": "50000",
+                                    "description": "Number of mock records to generate (1,000-1,000,000)"
+                                }
+                            ]
+                        },
+                        "description": "Generate demo data for testing"
+                    }
+                },
+                {
+                    "name": "Get Conversion Status",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/conversion/status/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "conversion",
+                                "status",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Check the status of a conversion job"
                     }
                 },
                 {
                     "name": "Get Schema",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/schema/{{job_id}}"
+                        "url": {
+                            "raw": "{{base_url}}/api/schema/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schema",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Get the schema of a converted database"
                     }
                 },
                 {
                     "name": "Download Database",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/download/{{job_id}}"
+                        "url": {
+                            "raw": "{{base_url}}/api/download/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "download",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Download the converted SQLite database file"
                     }
                 },
                 {
                     "name": "List Jobs",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/jobs"
+                        "url": {
+                            "raw": "{{base_url}}/api/jobs",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "jobs"
+                            ]
+                        },
+                        "description": "List all conversion jobs"
+                    }
+                },
+                {
+                    "name": "Delete Job",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/jobs/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "jobs",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Delete a conversion job and its database"
                     }
                 }
             ]
         },
         {
             "name": "Query",
+            "description": "Natural language and SQL query endpoints",
             "item": [
                 {
                     "name": "Natural Language Query",
                     "request": {
                         "method": "POST",
-                        "url": "{{base_url}}/api/query",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -109,15 +212,25 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"question\": \"Show all records\",\n  \"max_rows\": 100\n}"
-                        }
+                            "raw": "{\n  \"job_id\": \"abc123\",\n  \"question\": \"Show all records where sales > 1000\",\n  \"max_rows\": 1000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/query",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "query"
+                            ]
+                        },
+                        "description": "Submit a natural language query - AI converts to SQL"
                     }
                 },
                 {
                     "name": "Direct SQL Query",
                     "request": {
                         "method": "POST",
-                        "url": "{{base_url}}/api/query/sql",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -126,22 +239,56 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"sql\": \"SELECT * FROM data LIMIT 10\",\n  \"max_rows\": 100\n}"
-                        }
+                            "raw": "{\n  \"job_id\": \"abc123\",\n  \"sql\": \"SELECT * FROM converted_data WHERE sales > 1000 LIMIT 100\",\n  \"max_rows\": 1000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/query/sql",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "query",
+                                "sql"
+                            ]
+                        },
+                        "description": "Execute a direct SQL query"
                     }
                 },
                 {
-                    "name": "Query History",
+                    "name": "Get Query History",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/query/history/{{job_id}}"
+                        "url": {
+                            "raw": "{{base_url}}/api/query/history?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "query",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Get query history for a job"
                     }
-                },
+                }
+            ]
+        },
+        {
+            "name": "Populations",
+            "description": "Population segmentation endpoints",
+            "item": [
                 {
-                    "name": "Preview SQL",
+                    "name": "Create Population",
                     "request": {
                         "method": "POST",
-                        "url": "{{base_url}}/api/query/preview",
                         "header": [
                             {
                                 "key": "Content-Type",
@@ -150,72 +297,820 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"job_id\": \"{{job_id}}\",\n  \"question\": \"Count all records\"\n}"
-                        }
+                            "raw": "{\n  \"name\": \"High Value Customers\",\n  \"query\": \"SELECT * FROM converted_data WHERE sales > 1000\",\n  \"description\": \"Customers with sales over 1000\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/populations/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "populations",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Create a new population from a SQL query"
+                    }
+                },
+                {
+                    "name": "List Populations",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/populations/:job_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "populations",
+                                ":job_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "job_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "List all populations for a job"
+                    }
+                },
+                {
+                    "name": "Get Population Data",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/population/:pop_id/data?job_id=abc123&limit=100",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "population",
+                                ":pop_id",
+                                "data"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "100"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Get data records for a population"
+                    }
+                },
+                {
+                    "name": "Refresh Population",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/population/:pop_id/refresh?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "population",
+                                ":pop_id",
+                                "refresh"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Refresh population count by re-running the query"
+                    }
+                },
+                {
+                    "name": "Combine Populations",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"population_ids\": [\"pop1\", \"pop2\"],\n  \"operation\": \"union\",\n  \"new_name\": \"Combined Population\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/populations/combine?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "populations",
+                                "combine"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Combine multiple populations (union, intersect, or exclude)"
+                    }
+                },
+                {
+                    "name": "Delete Population",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/population/:pop_id?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "population",
+                                ":pop_id"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Delete a population"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reporting",
+            "description": "Report generation endpoints",
+            "item": [
+                {
+                    "name": "Generate Summary Report",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/report/summary/:pop_id?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "report",
+                                "summary",
+                                ":pop_id"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Generate a summary report with statistics"
+                    }
+                },
+                {
+                    "name": "Generate Detailed Report",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"columns\": [\"name\", \"email\", \"sales\"],\n  \"limit\": 10000\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/report/detailed/:pop_id?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "report",
+                                "detailed",
+                                ":pop_id"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Generate a detailed report with all records"
+                    }
+                },
+                {
+                    "name": "Generate Comparison Report",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"population_ids\": [\"pop1\", \"pop2\", \"pop3\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/report/comparison?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "report",
+                                "comparison"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Compare multiple populations"
+                    }
+                },
+                {
+                    "name": "Download Report",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/report/:pop_id/download?job_id=abc123&format=csv&type=summary",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "report",
+                                ":pop_id",
+                                "download"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                },
+                                {
+                                    "key": "format",
+                                    "value": "csv",
+                                    "description": "csv, json, or html"
+                                },
+                                {
+                                    "key": "type",
+                                    "value": "summary",
+                                    "description": "summary, detailed, or comparison"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "pop_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Download a report in various formats"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Messaging",
+            "description": "Message template and sending endpoints",
+            "item": [
+                {
+                    "name": "Create Template",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Welcome Email\",\n  \"subject\": \"Welcome {{name}}!\",\n  \"body\": \"Hi {{name}},\\n\\nThank you for being a valued customer with {{sales}} in sales.\\n\\nBest regards\",\n  \"channel\": \"email\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/templates?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "templates"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Create a message template with variable placeholders"
+                    }
+                },
+                {
+                    "name": "List Templates",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/templates?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "templates"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "List all message templates"
+                    }
+                },
+                {
+                    "name": "Preview Message",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"template_id\": \"tpl123\",\n  \"sample_record\": {\"name\": \"John\", \"sales\": 1500}\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/template/:template_id/preview?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "template",
+                                ":template_id",
+                                "preview"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "template_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Preview a message with sample data"
+                    }
+                },
+                {
+                    "name": "Send Messages",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"template_id\": \"tpl123\",\n  \"population_id\": \"pop123\",\n  \"dry_run\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/messaging/send?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "messaging",
+                                "send"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Send messages to a population (use dry_run=true to test)"
+                    }
+                },
+                {
+                    "name": "Get Send History",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/messaging/history?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "messaging",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Get message send history"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Database",
+            "description": "Database configuration endpoints",
+            "item": [
+                {
+                    "name": "Get Supported Databases",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/database/types",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "database",
+                                "types"
+                            ]
+                        },
+                        "description": "Get list of supported database types"
+                    }
+                },
+                {
+                    "name": "Test PostgreSQL Connection",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/database/test?host=localhost&port=5432&database=mydb&user=postgres&password=secret",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "database",
+                                "test"
+                            ],
+                            "query": [
+                                {
+                                    "key": "host",
+                                    "value": "localhost"
+                                },
+                                {
+                                    "key": "port",
+                                    "value": "5432"
+                                },
+                                {
+                                    "key": "database",
+                                    "value": "mydb"
+                                },
+                                {
+                                    "key": "user",
+                                    "value": "postgres"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "secret"
+                                }
+                            ]
+                        },
+                        "description": "Test a PostgreSQL connection"
+                    }
+                },
+                {
+                    "name": "Configure Database",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"db_type\": \"postgresql\",\n  \"postgresql\": {\n    \"host\": \"localhost\",\n    \"port\": 5432,\n    \"database\": \"mydb\",\n    \"user\": \"postgres\",\n    \"password\": \"secret\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/database/config?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "database",
+                                "config"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Configure database backend for a job"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Scheduler",
+            "description": "Scheduled job endpoints",
+            "item": [
+                {
+                    "name": "Create Scheduled Job",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Weekly Report\",\n  \"job_type\": \"report\",\n  \"frequency\": \"weekly\",\n  \"config\": {\n    \"population_id\": \"pop123\",\n    \"report_type\": \"summary\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/schedule?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedule"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "Schedule a recurring job"
+                    }
+                },
+                {
+                    "name": "List Scheduled Jobs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/schedules?job_id=abc123",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedules"
+                            ],
+                            "query": [
+                                {
+                                    "key": "job_id",
+                                    "value": "abc123"
+                                }
+                            ]
+                        },
+                        "description": "List all scheduled jobs"
+                    }
+                },
+                {
+                    "name": "Get Upcoming Jobs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/schedules/upcoming?hours=24",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedules",
+                                "upcoming"
+                            ],
+                            "query": [
+                                {
+                                    "key": "hours",
+                                    "value": "24"
+                                }
+                            ]
+                        },
+                        "description": "Get jobs scheduled in the next N hours"
+                    }
+                },
+                {
+                    "name": "Pause Scheduled Job",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/schedule/:schedule_id/pause",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedule",
+                                ":schedule_id",
+                                "pause"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "schedule_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Pause a scheduled job"
+                    }
+                },
+                {
+                    "name": "Resume Scheduled Job",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{base_url}}/api/schedule/:schedule_id/resume",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedule",
+                                ":schedule_id",
+                                "resume"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "schedule_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Resume a paused job"
+                    }
+                },
+                {
+                    "name": "Delete Scheduled Job",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{base_url}}/api/schedule/:schedule_id",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "schedule",
+                                ":schedule_id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "schedule_id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "Delete a scheduled job"
                     }
                 }
             ]
         },
         {
             "name": "Admin",
+            "description": "System administration endpoints",
             "item": [
                 {
-                    "name": "Health Check (Detailed)",
+                    "name": "Health Check",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/admin/health"
+                        "url": {
+                            "raw": "{{base_url}}/api/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "health"
+                            ]
+                        },
+                        "description": "Check API health status"
                     }
                 },
                 {
-                    "name": "Metrics",
+                    "name": "Get Metrics",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/admin/metrics"
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/metrics",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "metrics"
+                            ]
+                        },
+                        "description": "Get system metrics"
                     }
                 },
                 {
-                    "name": "Cache Stats",
+                    "name": "Get System Info",
                     "request": {
                         "method": "GET",
-                        "url": "{{base_url}}/api/admin/cache/stats"
-                    }
-                },
-                {
-                    "name": "Clear Cache",
-                    "request": {
-                        "method": "POST",
-                        "url": "{{base_url}}/api/admin/cache/clear"
-                    }
-                },
-                {
-                    "name": "Queue Status",
-                    "request": {
-                        "method": "GET",
-                        "url": "{{base_url}}/api/admin/queue/status"
-                    }
-                },
-                {
-                    "name": "Storage Stats",
-                    "request": {
-                        "method": "GET",
-                        "url": "{{base_url}}/api/admin/storage"
-                    }
-                },
-                {
-                    "name": "System Info",
-                    "request": {
-                        "method": "GET",
-                        "url": "{{base_url}}/api/admin/system"
-                    }
-                },
-                {
-                    "name": "Trigger Cleanup",
-                    "request": {
-                        "method": "POST",
-                        "url": "{{base_url}}/api/admin/cleanup"
+                        "url": {
+                            "raw": "{{base_url}}/api/admin/system",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "admin",
+                                "system"
+                            ]
+                        },
+                        "description": "Get system information"
                     }
                 }
             ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000"
         }
     ]
 }
