@@ -4,6 +4,9 @@ import SchemaViewer from './components/SchemaViewer';
 import QueryInterface from './components/QueryInterface';
 import QueryHistory from './components/QueryHistory';
 import Dashboard from './components/Dashboard';
+import PopulationManager from './components/PopulationManager';
+import MessageCenter from './components/MessageCenter';
+import ReportBuilder from './components/ReportBuilder';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider, ThemeToggle } from './components/Theme';
 import { KeyboardProvider, useShortcut } from './components/Keyboard';
@@ -13,11 +16,16 @@ import './index.css';
 import './styles/enhanced.css';
 import './styles/charts.css';
 import './styles/final.css';
+import './styles/population.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('upload');
   const [jobId, setJobId] = useState(null);
   const [schema, setSchema] = useState(null);
+  const [populations, setPopulations] = useState([]);
+  const [selectedPopulation, setSelectedPopulation] = useState(null);
   const [showHelp, setShowHelp] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
@@ -27,8 +35,26 @@ function AppContent() {
   useShortcut('mod+1', () => setActiveTab('upload'), 'Go to Upload');
   useShortcut('mod+2', () => setActiveTab('schema'), 'Go to Schema');
   useShortcut('mod+3', () => setActiveTab('query'), 'Go to Query');
-  useShortcut('mod+4', () => setActiveTab('history'), 'Go to History');
-  useShortcut('mod+5', () => setActiveTab('dashboard'), 'Go to Dashboard');
+  useShortcut('mod+4', () => setActiveTab('populations'), 'Go to Populations');
+  useShortcut('mod+5', () => setActiveTab('reports'), 'Go to Reports');
+  useShortcut('mod+6', () => setActiveTab('messages'), 'Go to Messages');
+
+  // Load populations when job changes
+  useEffect(() => {
+    if (jobId) {
+      loadPopulations();
+    }
+  }, [jobId]);
+
+  const loadPopulations = async () => {
+    try {
+      const res = await fetch(`${API_URL}/populations/${jobId}`);
+      const data = await res.json();
+      setPopulations(data.populations || []);
+    } catch (err) {
+      console.error('Failed to load populations');
+    }
+  };
 
   const handleUploadComplete = (newJobId, newSchema) => {
     setJobId(newJobId);
@@ -36,12 +62,18 @@ function AppContent() {
     setActiveTab('schema');
   };
 
+  const handleSelectPopulation = (pop) => {
+    setSelectedPopulation(pop);
+    setActiveTab('messages');
+  };
+
   const tabs = [
     { id: 'upload', label: '📤 Upload', shortcut: '⌘1' },
     { id: 'schema', label: '📋 Schema', shortcut: '⌘2', disabled: !jobId },
     { id: 'query', label: '💬 Query', shortcut: '⌘3', disabled: !jobId },
-    { id: 'history', label: '📜 History', shortcut: '⌘4', disabled: !jobId },
-    { id: 'dashboard', label: '📊 Dashboard', shortcut: '⌘5', disabled: !jobId },
+    { id: 'populations', label: '👥 Populations', shortcut: '⌘4', disabled: !jobId },
+    { id: 'reports', label: '📊 Reports', shortcut: '⌘5', disabled: !jobId },
+    { id: 'messages', label: '📨 Messages', shortcut: '⌘6', disabled: !jobId },
   ];
 
   return (
@@ -105,13 +137,32 @@ function AppContent() {
           <SchemaViewer schema={schema} jobId={jobId} />
         )}
         {activeTab === 'query' && (
-          <QueryInterface jobId={jobId} schema={schema} />
+          <QueryInterface
+            jobId={jobId}
+            schema={schema}
+            onSavePopulation={loadPopulations}
+          />
         )}
-        {activeTab === 'history' && (
-          <QueryHistory jobId={jobId} />
+        {activeTab === 'populations' && (
+          <PopulationManager
+            jobId={jobId}
+            schema={schema}
+            onSelectPopulation={handleSelectPopulation}
+          />
         )}
-        {activeTab === 'dashboard' && (
-          <Dashboard jobId={jobId} schema={schema} />
+        {activeTab === 'reports' && (
+          <ReportBuilder
+            jobId={jobId}
+            populations={populations}
+            schema={schema}
+          />
+        )}
+        {activeTab === 'messages' && (
+          <MessageCenter
+            jobId={jobId}
+            schema={schema}
+            selectedPopulation={selectedPopulation}
+          />
         )}
       </main>
 
