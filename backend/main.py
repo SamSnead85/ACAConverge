@@ -17,15 +17,16 @@ from routes.reporting import router as reporting_router
 from routes.messaging import router as messaging_router
 from routes.scheduler import router as scheduler_router
 from routes.database import router as database_router
+from routes.ai_leads import router as ai_leads_router
 from services.middleware import RequestLoggingMiddleware
 
 # Load environment variables
 load_dotenv()
 
 app = FastAPI(
-    title="Data Converter & Analytics Platform",
-    description="Convert data files (YXDB, CSV, Excel, JSON) to SQL with NLP queries, population management, and messaging",
-    version="2.0.0"
+    title="ACA DataHub - AI Analytics Platform",
+    description="Convert data files to SQL with AI-powered lead scoring, NLP queries, and email marketing",
+    version="2.1.0"
 )
 
 # CORS configuration - allow all origins in development
@@ -46,6 +47,8 @@ app.include_router(reporting_router, prefix="/api", tags=["Reporting"])
 app.include_router(messaging_router, prefix="/api", tags=["Messaging"])
 app.include_router(scheduler_router, prefix="/api", tags=["Scheduler"])
 app.include_router(database_router, prefix="/api", tags=["Database"])
+app.include_router(ai_leads_router, tags=["AI Leads"])
+
 
 
 

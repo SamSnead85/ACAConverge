@@ -8,6 +8,7 @@ import MessageCenter from './components/MessageCenter';
 import ReportBuilder from './components/ReportBuilder';
 import DatabaseConfig from './components/DatabaseConfig';
 import SmartSuggestions from './components/SmartSuggestions';
+import LeadFinder from './components/LeadFinder';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider, ThemeToggle } from './components/Theme';
 import { KeyboardProvider, useShortcut } from './components/Keyboard';
@@ -24,6 +25,7 @@ import './styles/query.css';
 import './styles/history.css';
 import './styles/modern.css';
 import './styles/ai-insights.css';
+import './styles/lead-finder.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -133,6 +135,14 @@ function AppContent() {
               </button>
 
               <button
+                className={`nav-item ${activeTab === 'leads' ? 'active' : ''}`}
+                onClick={() => setActiveTab('leads')}
+              >
+                <span className="nav-icon">🎯</span>
+                <span className="nav-label">Lead Finder</span>
+              </button>
+
+              <button
                 className={`nav-item ${activeTab === 'populations' ? 'active' : ''}`}
                 onClick={() => setActiveTab('populations')}
               >
@@ -203,6 +213,14 @@ function AppContent() {
 
         {activeTab === 'query' && (
           <QueryInterface
+            jobId={jobId}
+            schema={schema}
+            onSavePopulation={loadPopulations}
+          />
+        )}
+
+        {activeTab === 'leads' && (
+          <LeadFinder
             jobId={jobId}
             schema={schema}
             onSavePopulation={loadPopulations}
