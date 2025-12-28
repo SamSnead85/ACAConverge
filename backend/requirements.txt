@@ -9,3 +9,27 @@ openpyxl==3.1.2
 psutil==5.9.8
 psycopg2-binary==2.9.9
 
+# Authentication & Security (Phase 111-120)
+bcrypt==4.1.2
+python-jose[cryptography]==3.3.0
+pyotp==2.9.0
+
+# Real-time (Phase 121-130)
+websockets==12.0
+
+# ML/Analytics (Phase 141-150)
+scikit-learn==1.4.0
+numpy==1.26.3
+
+# Caching & Performance (Phase 191-200)
+redis==5.0.1
+
+# Monitoring (Phase 201-210)
+sentry-sdk[fastapi]==1.39.1
+
+# Email/SMS Integrations (Phase 171-180)
+httpx==0.26.0
+
+# Billing (Phase 291-300)
+stripe==7.10.0
+

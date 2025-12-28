@@ -1,0 +1,121 @@
+{
+    "name": "ACA DataHub",
+    "short_name": "DataHub",
+    "description": "Enterprise AI-powered data analytics and lead management platform",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0f0f1a",
+    "theme_color": "#6366f1",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/icons/icon-72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/dashboard.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Dashboard Overview"
+        },
+        {
+            "src": "/screenshots/leads.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "label": "Lead Management"
+        }
+    ],
+    "categories": [
+        "business",
+        "productivity"
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "View your dashboard",
+            "url": "/?tab=dashboard",
+            "icons": [
+                {
+                    "src": "/icons/dashboard.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "New Query",
+            "short_name": "Query",
+            "description": "Create a new query",
+            "url": "/?tab=query",
+            "icons": [
+                {
+                    "src": "/icons/query.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Leads",
+            "short_name": "Leads",
+            "description": "View AI lead scoring",
+            "url": "/?tab=leads",
+            "icons": [
+                {
+                    "src": "/icons/leads.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "scope": "/",
+    "lang": "en-US",
+    "dir": "ltr"
+}
