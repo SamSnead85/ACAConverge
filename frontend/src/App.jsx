@@ -9,6 +9,7 @@ import ReportBuilder from './components/ReportBuilder';
 import DatabaseConfig from './components/DatabaseConfig';
 import SmartSuggestions from './components/SmartSuggestions';
 import LeadFinder from './components/LeadFinder';
+import MemberCRM from './components/MemberCRM';
 import { ToastProvider } from './components/Toast';
 import { ThemeProvider, ThemeToggle } from './components/Theme';
 import { KeyboardProvider, useShortcut } from './components/Keyboard';
@@ -26,6 +27,7 @@ import './styles/history.css';
 import './styles/modern.css';
 import './styles/ai-insights.css';
 import './styles/lead-finder.css';
+import './styles/member-crm.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -143,6 +145,14 @@ function AppContent() {
               </button>
 
               <button
+                className={`nav-item ${activeTab === 'members' ? 'active' : ''}`}
+                onClick={() => setActiveTab('members')}
+              >
+                <span className="nav-icon">👥</span>
+                <span className="nav-label">Members</span>
+              </button>
+
+              <button
                 className={`nav-item ${activeTab === 'populations' ? 'active' : ''}`}
                 onClick={() => setActiveTab('populations')}
               >
@@ -224,6 +234,13 @@ function AppContent() {
             jobId={jobId}
             schema={schema}
             onSavePopulation={loadPopulations}
+          />
+        )}
+
+        {activeTab === 'members' && (
+          <MemberCRM
+            jobId={jobId}
+            schema={schema}
           />
         )}
 

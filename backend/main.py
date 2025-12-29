@@ -46,6 +46,29 @@ from routes.mlops import router as mlops_router
 from routes.predictive_ux import router as predictive_ux_router
 from routes.distributed import router as distributed_router
 from routes.global_deployment import router as global_deployment_router
+# Phase 411-510 routers
+from routes.realtime_intelligence import router as realtime_router
+from routes.anomaly_detection import router as anomaly_router
+from routes.document_processing import router as document_router
+from routes.conversational_bi import router as conversational_bi_router
+from routes.data_lineage import router as lineage_router
+from routes.resource_optimization import router as optimization_router
+from routes.security_ops import router as security_ops_router
+from routes.data_contracts import router as contracts_router
+from routes.synthetic_data import router as synthetic_router
+from routes.ai_governance import router as governance_router
+# Phase 511-610 routers
+from routes.ai_agents import router as agents_router
+from routes.data_observability import router as observability_router
+from routes.tenant_security import router as tenant_security_router
+from routes.multicloud import router as multicloud_router
+from routes.adaptive_learning import router as adaptive_router
+from routes.behavioral_analytics import router as behavioral_router
+from routes.nlg import router as nlg_router
+from routes.collaboration import router as collaboration_router
+from routes.external_data import router as external_router
+from routes.autonomous_ops import router as autonomous_router
+from routes.member_search import router as member_search_router
 from services.middleware import RequestLoggingMiddleware
 
 # Load environment variables
@@ -54,7 +77,7 @@ load_dotenv()
 app = FastAPI(
     title="ACA DataHub - AI Analytics Platform",
     description="Enterprise data analytics with AI-powered lead scoring, NLP queries, campaigns, integrations, and compliance",
-    version="3.0.0"
+    version="7.0.0"
 )
 
 # CORS configuration - allow all origins in development
@@ -109,6 +132,33 @@ app.include_router(predictive_ux_router, prefix="/api", tags=["Predictive UX"])
 app.include_router(distributed_router, prefix="/api", tags=["Distributed Computing"])
 app.include_router(global_deployment_router, prefix="/api", tags=["Global Deployment"])
 
+# Include routers - Ultra-Advanced (Phases 411-510)
+app.include_router(realtime_router, prefix="/api", tags=["Real-Time Intelligence"])
+app.include_router(anomaly_router, prefix="/api", tags=["Anomaly Detection"])
+app.include_router(document_router, prefix="/api", tags=["Document Processing"])
+app.include_router(conversational_bi_router, prefix="/api", tags=["Conversational BI"])
+app.include_router(lineage_router, prefix="/api", tags=["Data Lineage"])
+app.include_router(optimization_router, prefix="/api", tags=["Resource Optimization"])
+app.include_router(security_ops_router, prefix="/api", tags=["Security Operations"])
+app.include_router(contracts_router, prefix="/api", tags=["Data Contracts"])
+app.include_router(synthetic_router, prefix="/api", tags=["Synthetic Data"])
+app.include_router(governance_router, prefix="/api", tags=["AI Governance"])
+
+# Include routers - Autonomous AI (Phases 511-610)
+app.include_router(agents_router, prefix="/api", tags=["AI Agents"])
+app.include_router(observability_router, prefix="/api", tags=["Data Observability"])
+app.include_router(tenant_security_router, prefix="/api", tags=["Tenant Security"])
+app.include_router(multicloud_router, prefix="/api", tags=["Multi-Cloud"])
+app.include_router(adaptive_router, prefix="/api", tags=["Adaptive Learning"])
+app.include_router(behavioral_router, prefix="/api", tags=["Behavioral Analytics"])
+app.include_router(nlg_router, prefix="/api", tags=["Natural Language Generation"])
+app.include_router(collaboration_router, prefix="/api", tags=["Collaboration"])
+app.include_router(external_router, prefix="/api", tags=["External Data Sources"])
+app.include_router(autonomous_router, prefix="/api", tags=["Autonomous Operations"])
+
+# Member CRM
+app.include_router(member_search_router, prefix="/api", tags=["Member CRM"])
+
 
 # Create uploads and databases directories
 os.makedirs("uploads", exist_ok=True)
@@ -123,13 +173,11 @@ async def root():
     return {
         "message": "ACA DataHub - Enterprise AI Analytics Platform",
         "docs": "/docs",
-        "version": "5.0.0",
-        "phases_completed": 410
+        "version": "7.0.0",
+        "phases_completed": 610
     }
 
 
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy"}
-
-
