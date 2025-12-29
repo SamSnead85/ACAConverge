@@ -32,7 +32,7 @@ import './styles/member-crm.css';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('upload');
+  const [activeTab, setActiveTab] = useState('members');
   const [jobId, setJobId] = useState(null);
   const [schema, setSchema] = useState(null);
   const [populations, setPopulations] = useState([]);
@@ -118,65 +118,61 @@ function AppContent() {
             <span className="nav-label">Import</span>
           </button>
 
-          {jobId && (
-            <>
-              <button
-                className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-                onClick={() => setActiveTab('dashboard')}
-              >
-                <span className="nav-icon">📊</span>
-                <span className="nav-label">Insights</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Insights</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'query' ? 'active' : ''}`}
-                onClick={() => setActiveTab('query')}
-              >
-                <span className="nav-icon">✨</span>
-                <span className="nav-label">AI Query</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'query' ? 'active' : ''}`}
+            onClick={() => setActiveTab('query')}
+          >
+            <span className="nav-icon">✨</span>
+            <span className="nav-label">AI Query</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'leads' ? 'active' : ''}`}
-                onClick={() => setActiveTab('leads')}
-              >
-                <span className="nav-icon">🎯</span>
-                <span className="nav-label">Lead Finder</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'leads' ? 'active' : ''}`}
+            onClick={() => setActiveTab('leads')}
+          >
+            <span className="nav-icon">🎯</span>
+            <span className="nav-label">Lead Finder</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'members' ? 'active' : ''}`}
-                onClick={() => setActiveTab('members')}
-              >
-                <span className="nav-icon">👥</span>
-                <span className="nav-label">Members</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'members' ? 'active' : ''}`}
+            onClick={() => setActiveTab('members')}
+          >
+            <span className="nav-icon">👥</span>
+            <span className="nav-label">Members</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'populations' ? 'active' : ''}`}
-                onClick={() => setActiveTab('populations')}
-              >
-                <span className="nav-icon">👥</span>
-                <span className="nav-label">Segments</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'populations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('populations')}
+          >
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Segments</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
-                onClick={() => setActiveTab('reports')}
-              >
-                <span className="nav-icon">📈</span>
-                <span className="nav-label">Reports</span>
-              </button>
+          <button
+            className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`}
+            onClick={() => setActiveTab('reports')}
+          >
+            <span className="nav-icon">📈</span>
+            <span className="nav-label">Reports</span>
+          </button>
 
-              <button
-                className={`nav-item ${activeTab === 'messages' ? 'active' : ''}`}
-                onClick={() => setActiveTab('messages')}
-              >
-                <span className="nav-icon">📨</span>
-                <span className="nav-label">Outreach</span>
-              </button>
-            </>
-          )}
+          <button
+            className={`nav-item ${activeTab === 'messages' ? 'active' : ''}`}
+            onClick={() => setActiveTab('messages')}
+          >
+            <span className="nav-icon">📨</span>
+            <span className="nav-label">Outreach</span>
+          </button>
         </nav>
 
         <div className="header-right">
