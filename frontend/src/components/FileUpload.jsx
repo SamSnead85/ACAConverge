@@ -217,9 +217,9 @@ export default function FileUpload({ onUploadComplete }) {
     return (
         <div className="card">
             <div className="card-header">
-                <h2 className="card-title">Upload Data File</h2>
+                <h2 className="card-title">Import Member Data</h2>
                 <p className="card-description">
-                    Upload your data file to convert it to a SQL database for querying and analysis
+                    Upload your member data file to search, analyze, segment, and engage your members
                 </p>
             </div>
 
@@ -271,7 +271,7 @@ export default function FileUpload({ onUploadComplete }) {
                             onClick={handleUpload}
                             disabled={!file || uploading}
                         >
-                            {uploading ? 'Converting...' : '⚡ Convert to SQL'}
+                            {uploading ? 'Importing...' : '📥 Import Members'}
                         </button>
                         <button
                             className="btn btn-secondary"
