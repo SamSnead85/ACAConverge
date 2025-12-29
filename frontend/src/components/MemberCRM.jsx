@@ -19,6 +19,19 @@ export default function MemberCRM({ jobId, schema }) {
     const [fieldMappings, setFieldMappings] = useState({});
     const [totalCount, setTotalCount] = useState(0);
 
+    // Selection and Email State
+    const [selectedMembers, setSelectedMembers] = useState(new Set());
+    const [showEmailModal, setShowEmailModal] = useState(false);
+    const [sendingEmail, setSendingEmail] = useState(false);
+    const [emailConfig, setEmailConfig] = useState({
+        subject: 'Your ACA Health Insurance Options',
+        customMessage: '',
+        healthsherpa_npn: '',
+        agent_name: '',
+        agent_phone: '',
+        agent_email: ''
+    });
+
     // Advanced search fields
     const [advancedFilters, setAdvancedFilters] = useState({
         member_number: '',
@@ -184,6 +197,63 @@ export default function MemberCRM({ jobId, schema }) {
         return member[fieldMappings.member_number] || member._row_id;
     };
 
+    // Selection functions
+    const toggleMemberSelection = (memberId) => {
+        const newSelected = new Set(selectedMembers);
+        if (newSelected.has(memberId)) {
+            newSelected.delete(memberId);
+        } else {
+            newSelected.add(memberId);
+        }
+        setSelectedMembers(newSelected);
+    };
+
+    const selectAllMembers = () => {
+        if (selectedMembers.size === members.length) {
+            setSelectedMembers(new Set());
+        } else {
+            setSelectedMembers(new Set(members.map(m => m._row_id)));
+        }
+    };
+
+    const handleSendBulkEmail = async () => {
+        if (selectedMembers.size === 0) {
+            addToast('Please select members first', 'warning');
+            return;
+        }
+
+        setSendingEmail(true);
+        try {
+            const res = await fetch(`${API_URL}/ai/leads/send-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    job_id: jobId,
+                    lead_ids: Array.from(selectedMembers),
+                    subject: emailConfig.subject,
+                    custom_message: emailConfig.customMessage,
+                    healthsherpa_npn: emailConfig.healthsherpa_npn || null,
+                    agent_name: emailConfig.agent_name || null,
+                    agent_phone: emailConfig.agent_phone || null,
+                    agent_email: emailConfig.agent_email || null
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                addToast(`Sent ${data.emails_sent} emails successfully!`, 'success');
+                setShowEmailModal(false);
+                setSelectedMembers(new Set());
+            } else {
+                addToast(data.error || 'Failed to send emails', 'error');
+            }
+        } catch (err) {
+            addToast('Failed to send emails', 'error');
+        } finally {
+            setSendingEmail(false);
+        }
+    };
+
     // Get columns from members for table display
     const columns = members.length > 0
         ? Object.keys(members[0]).filter(k => !k.startsWith('_')).slice(0, 8)
@@ -196,6 +266,16 @@ export default function MemberCRM({ jobId, schema }) {
                 <div className="header-left">
                     <h2>👥 Member CRM</h2>
                     <span className="gemini-badge">AI-Powered</span>
+                </div>
+                <div className="header-actions">
+                    {selectedMembers.size > 0 && (
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setShowEmailModal(true)}
+                        >
+                            📧 Email Selected ({selectedMembers.size})
+                        </button>
+                    )}
                 </div>
                 {stats && (
                     <div className="crm-stats">
@@ -419,11 +499,21 @@ export default function MemberCRM({ jobId, schema }) {
                         <>
                             <div className="results-header">
                                 <h3>📋 Results ({members.length} of {totalCount.toLocaleString()})</h3>
+                                <button className="btn btn-sm" onClick={selectAllMembers}>
+                                    {selectedMembers.size === members.length ? 'Deselect All' : 'Select All'}
+                                </button>
                             </div>
                             <div className="table-scroll">
                                 <table className="members-table">
                                     <thead>
                                         <tr>
+                                            <th style={{ width: '40px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedMembers.size === members.length && members.length > 0}
+                                                    onChange={selectAllMembers}
+                                                />
+                                            </th>
                                             {columns.map(col => (
                                                 <th key={col}>{col.replace(/_/g, ' ')}</th>
                                             ))}
@@ -434,9 +524,16 @@ export default function MemberCRM({ jobId, schema }) {
                                         {members.map((member, i) => (
                                             <tr
                                                 key={member._row_id || i}
-                                                className={selectedMember?._row_id === member._row_id ? 'selected' : ''}
+                                                className={`${selectedMember?._row_id === member._row_id ? 'selected' : ''} ${selectedMembers.has(member._row_id) ? 'checked' : ''}`}
                                                 onClick={() => handleViewMember(member)}
                                             >
+                                                <td onClick={e => e.stopPropagation()}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedMembers.has(member._row_id)}
+                                                        onChange={() => toggleMemberSelection(member._row_id)}
+                                                    />
+                                                </td>
                                                 {columns.map(col => (
                                                     <td key={col}>{String(member[col] || '')}</td>
                                                 ))}
@@ -571,6 +668,105 @@ export default function MemberCRM({ jobId, schema }) {
                     </div>
                 )}
             </div>
+
+            {/* Email Modal */}
+            {showEmailModal && (
+                <div className="modal-overlay" onClick={() => setShowEmailModal(false)}>
+                    <div className="modal email-modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>📧 Send Bulk Email</h3>
+                            <button className="close-btn" onClick={() => setShowEmailModal(false)}>×</button>
+                        </div>
+
+                        <div className="modal-body">
+                            <p className="modal-info">
+                                Sending to <strong>{selectedMembers.size}</strong> selected members
+                            </p>
+
+                            <div className="form-section">
+                                <h4>Email Content</h4>
+                                <div className="form-group">
+                                    <label>Subject Line</label>
+                                    <input
+                                        type="text"
+                                        value={emailConfig.subject}
+                                        onChange={(e) => setEmailConfig({ ...emailConfig, subject: e.target.value })}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Custom Message (optional)</label>
+                                    <textarea
+                                        value={emailConfig.customMessage}
+                                        onChange={(e) => setEmailConfig({ ...emailConfig, customMessage: e.target.value })}
+                                        placeholder="Add a personalized message about ACA enrollment..."
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-section">
+                                <h4>🔗 HealthSherpa Integration</h4>
+                                <p className="form-hint">Enter your NPN to auto-generate HealthSherpa enrollment links</p>
+                                <div className="form-group">
+                                    <label>Agent NPN Number</label>
+                                    <input
+                                        type="text"
+                                        value={emailConfig.healthsherpa_npn}
+                                        onChange={(e) => setEmailConfig({ ...emailConfig, healthsherpa_npn: e.target.value })}
+                                        placeholder="e.g. 12345678"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-section">
+                                <h4>👤 Agent Contact Info</h4>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Your Name</label>
+                                        <input
+                                            type="text"
+                                            value={emailConfig.agent_name}
+                                            onChange={(e) => setEmailConfig({ ...emailConfig, agent_name: e.target.value })}
+                                            placeholder="John Smith"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={emailConfig.agent_phone}
+                                            onChange={(e) => setEmailConfig({ ...emailConfig, agent_phone: e.target.value })}
+                                            placeholder="(555) 555-5555"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        value={emailConfig.agent_email}
+                                        onChange={(e) => setEmailConfig({ ...emailConfig, agent_email: e.target.value })}
+                                        placeholder="agent@example.com"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button className="btn btn-secondary" onClick={() => setShowEmailModal(false)}>
+                                Cancel
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={handleSendBulkEmail}
+                                disabled={sendingEmail}
+                            >
+                                {sendingEmail ? '📤 Sending...' : `📧 Send to ${selectedMembers.size} Members`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

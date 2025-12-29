@@ -40,6 +40,11 @@ class SendEmailRequest(BaseModel):
     subject: str = "Your ACA Health Insurance Options"
     enrollment_link: str = ""
     custom_message: Optional[str] = None
+    # HealthSherpa Integration
+    healthsherpa_npn: Optional[str] = None  # Agent NPN number
+    agent_name: Optional[str] = None
+    agent_phone: Optional[str] = None
+    agent_email: Optional[str] = None
 
 
 def get_lead_service(job_id: str):
@@ -155,8 +160,27 @@ async def send_marketing_email(request: SendEmailRequest):
     if not leads:
         raise HTTPException(status_code=404, detail="No leads found with given IDs")
     
-    # Build email template
-    enrollment_link = request.enrollment_link or "https://www.healthcare.gov/"
+    # Build enrollment link - HealthSherpa with NPN if provided
+    if request.healthsherpa_npn:
+        enrollment_link = f"https://www.healthsherpa.com/?_agent_id={request.healthsherpa_npn}"
+    else:
+        enrollment_link = request.enrollment_link or "https://www.healthcare.gov/"
+    
+    # Agent info for email
+    agent_name = request.agent_name or "Your Licensed Agent"
+    agent_phone = request.agent_phone or ""
+    agent_email = request.agent_email or ""
+    
+    # Build contact block if agent info provided
+    agent_contact = ""
+    if agent_phone or agent_email:
+        agent_contact = f"""
+                <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <p style="margin: 0;"><strong>Your Licensed Agent:</strong> {agent_name}</p>
+                    {"<p style='margin: 5px 0;'>📞 " + agent_phone + "</p>" if agent_phone else ""}
+                    {"<p style='margin: 5px 0;'>📧 " + agent_email + "</p>" if agent_email else ""}
+                </div>
+        """
     
     template = f"""
     <html>
@@ -166,14 +190,14 @@ async def send_marketing_email(request: SendEmailRequest):
             .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
             .header {{ background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 30px; border-radius: 10px 10px 0 0; }}
             .content {{ background: #f8fafc; padding: 30px; }}
-            .cta {{ display: inline-block; background: #6366f1; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; }}
+            .cta {{ display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }}
             .footer {{ background: #1e1e2e; color: #888; padding: 20px; font-size: 12px; border-radius: 0 0 10px 10px; }}
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <h1>🏥 Important Health Insurance Information</h1>
+                <h1>🏥 Your Health Insurance Options</h1>
             </div>
             <div class="content">
                 <p>Dear {{{{name}}}},</p>
@@ -191,14 +215,16 @@ async def send_marketing_email(request: SendEmailRequest):
                 <p><strong>Open enrollment is happening now!</strong> Don't miss your chance to get covered.</p>
                 
                 <p style="text-align: center;">
-                    <a href="{enrollment_link}" class="cta">Explore Your Options →</a>
+                    <a href="{enrollment_link}" class="cta">🩺 Enroll Now - See Your Options →</a>
                 </p>
                 
-                <p>Questions? Reply to this email or call us directly.</p>
+                <p>Questions? Contact your licensed health insurance agent directly:</p>
+                {agent_contact}
             </div>
             <div class="footer">
                 <p>This message was sent to {{{{email}}}}.</p>
                 <p>If you no longer wish to receive these emails, please reply with "UNSUBSCRIBE".</p>
+                {"<p>Agent NPN: " + request.healthsherpa_npn + "</p>" if request.healthsherpa_npn else ""}
             </div>
         </div>
     </body>
